@@ -1,228 +1,745 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>คลังฟร้อง Pro (Calendar Edit)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Kanit', sans-serif; transition: background 0.5s ease; background-size: cover; background-position: center; min-height: 100vh; background-attachment: fixed; background-color: #333; }
-        .glass { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.3); }
-        .gold-card { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .avatar-slot { width: 55px; height: 55px; border-radius: 50%; border: 2px solid white; flex-shrink: 0; cursor: pointer; }
-        .type-active-red { background-color: #ef4444 !important; color: white !important; }
-        .type-active-green { background-color: #22c55e !important; color: white !important; }
-        #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💸 คลังทวงเงินฟร้อง Pro Max</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --glass-bg: rgba(255,255,255,0.07);
+    --glass-border: rgba(255,255,255,0.15);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --accent: #f59e0b;
+    --accent2: #ef4444;
+    --accent3: #10b981;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --bg-overlay: rgba(10,10,20,0.75);
+  }
+  [data-theme="light"] {
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(0,0,0,0.12);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --bg-overlay: rgba(240,245,255,0.72);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    min-height: 100vh;
+    background: #0f172a;
+    color: var(--text-primary);
+    transition: background 0.3s;
+  }
+  #bg-layer {
+    position: fixed; inset: 0; z-index: 0;
+    background-size: cover; background-position: center;
+    transition: opacity 0.5s;
+  }
+  #bg-layer::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(2px);
+  }
+  .main-wrap { position: relative; z-index: 1; }
+
+  /* Glassmorphism */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+  }
+  .glass-sm {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+  }
+
+  /* Input styles */
+  .inp {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    padding: 10px 14px;
+    width: 100%;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  [data-theme="light"] .inp { background: rgba(0,0,0,0.05); }
+  .inp:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.2);
+  }
+  .inp::placeholder { color: var(--text-secondary); opacity: 0.7; }
+  select.inp option { background: #1e293b; color: #f1f5f9; }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Kanit', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 15px rgba(245,158,11,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    transition: background 0.2s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.15); }
+
+  .toggle-sign {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+  }
+  .toggle-sign button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-secondary);
+  }
+  .toggle-sign button.active-plus { background: rgba(16,185,129,0.3); color: #10b981; }
+  .toggle-sign button.active-minus { background: rgba(239,68,68,0.3); color: #ef4444; }
+
+  /* Avatar ring */
+  .avatar-wrap {
+    position: relative; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    flex-shrink: 0;
+  }
+  .avatar-img {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    object-fit: cover;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .avatar-wrap:hover .avatar-img { transform: scale(1.1); box-shadow: 0 0 12px var(--accent); }
+  .avatar-name { font-size: 10px; color: var(--text-secondary); max-width: 56px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Status badge */
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    font-family: 'Kanit', sans-serif;
+  }
+  .badge-debt { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-paid { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+  /* Record card */
+  .record-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: slideIn 0.3s ease;
+  }
+  .record-card:hover { transform: translateX(4px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .amount-positive { color: #34d399; font-weight: 700; }
+  .amount-negative { color: #f87171; font-weight: 700; }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: #1e293b; color: #f1f5f9;
+    padding: 12px 24px; border-radius: 14px;
+    font-family: 'Kanit', sans-serif; font-size: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    z-index: 9999; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    border: 1px solid var(--glass-border);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Loader */
+  .loader {
+    width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+  label.lbl { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); letter-spacing: 0.5px; }
+
+  .section-title {
+    font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px;
+    letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;
+  }
+
+  /* Wallpaper picker */
+  #wallpaper-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .wp-thumb {
+    width: 48px; height: 48px; border-radius: 10px; cursor: pointer;
+    border: 2px solid transparent; object-fit: cover;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .wp-thumb:hover, .wp-thumb.active { border-color: var(--accent); transform: scale(1.1); }
+
+  /* Tabs */
+  .tab-btn {
+    flex: 1; padding: 10px; text-align: center;
+    font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; border-radius: 12px; transition: all 0.2s;
+    color: var(--text-secondary);
+  }
+  .tab-btn.active { background: var(--accent); color: #000; }
+
+  @media (max-width: 480px) {
+    .record-card { flex-wrap: wrap; }
+  }
+</style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-white"></div>
-        <p class="text-sm">กำลังจดใส่ปฏิทินให้ครับฟร้อง... 🚀</p>
+<div id="bg-layer"></div>
+
+<div class="main-wrap max-w-lg mx-auto px-4 py-6 space-y-5">
+
+  <!-- Header -->
+  <div class="glass p-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="font-bold text-2xl" style="font-family:'Kanit',sans-serif; background: linear-gradient(135deg,#f59e0b,#ef4444); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">💸 ฟร้อง Pro Max</h1>
+        <p class="text-sm mt-1" style="color:var(--text-secondary)">คลังบันทึกการยืม-คืนเงิน</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <button class="btn-ghost text-lg" id="theme-toggle" title="สลับธีม">🌙</button>
+        <button class="btn-ghost text-lg" id="wp-btn" title="เปลี่ยนพื้นหลัง">🖼️</button>
+        <button class="btn-ghost text-lg" id="settings-btn" title="ตั้งค่า">⚙️</button>
+      </div>
     </div>
 
-    <div class="fixed top-4 right-4 z-50">
-        <input type="file" id="bgInput" accept="image/*" class="hidden" onchange="compressAndSetBg(event)">
-        <button onclick="document.getElementById('bgInput').click()" class="p-2 bg-black/50 text-white rounded-full text-[10px] backdrop-blur-md shadow-xl border border-white/20">🖼️ เปลี่ยนพื้นหลัง</button>
+    <!-- Summary -->
+    <div class="grid grid-cols-3 gap-3 mt-4" id="summary-bar">
+      <div class="glass-sm p-3 text-center">
+        <div class="text-xs mb-1" style="color:var(--text-secondary)">💰 ยืมทั้งหมด</div>
+        <div class="font-bold text-lg amount-negative" id="sum-debt">฿0</div>
+      </div>
+      <div class="glass-sm p-3 text-center">
+        <div class="text-xs mb-1" style="color:var(--text-secondary)">✅ คืนแล้ว</div>
+        <div class="font-bold text-lg amount-positive" id="sum-paid">฿0</div>
+      </div>
+      <div class="glass-sm p-3 text-center">
+        <div class="text-xs mb-1" style="color:var(--text-secondary)">⏳ ค้างอยู่</div>
+        <div class="font-bold text-lg" style="color:var(--accent)" id="sum-remaining">฿0</div>
+      </div>
     </div>
+  </div>
 
-    <div class="max-w-md mx-auto mb-4 pt-10 px-4 flex gap-2">
-        <button onclick="switchPage('admin')" class="flex-1 py-3 rounded-2xl bg-yellow-500 text-white font-bold shadow-lg">📝 บันทึก</button>
-        <button onclick="loadManagePage()" class="flex-1 py-3 rounded-2xl bg-gray-900 text-white font-bold shadow-lg">🔍 ดูคลัง</button>
-    </div>
+  <!-- Smart Favorites -->
+  <div class="glass p-4" id="favorites-section" style="display:none">
+    <div class="section-title mb-3">⭐ รายชื่อล่าสุด</div>
+    <div class="flex gap-3 overflow-x-auto pb-1" id="favorites-bar"></div>
+  </div>
 
-    <div id="adminPage" class="max-w-md mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4 mb-10">
-        <h2 class="text-[10px] font-bold text-[#B8860B] mb-3 uppercase tracking-tighter">⭐ รายชื่อโปรด</h2>
-        <div id="favoriteList" class="flex gap-4 overflow-x-auto pb-4 mb-4 scrollbar-hide min-h-[70px]"></div>
+  <!-- Form -->
+  <div class="glass p-5">
+    <div class="section-title mb-4">📝 บันทึกรายการ</div>
 
-        <div class="space-y-4">
-            <div class="text-center">
-                <div id="imagePreview" onclick="document.getElementById('fileInput').click()" class="w-20 h-20 bg-gray-200 rounded-full mx-auto flex items-center justify-center cursor-pointer border-4 border-white shadow-md overflow-hidden bg-cover bg-center">
-                    <span class="text-[10px] text-gray-400">รูปหน้า</span>
-                </div>
-                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleDebtorPic(event)">
-            </div>
-
-            <input type="text" id="name" class="w-full p-4 bg-white/50 rounded-2xl border-none shadow-sm" placeholder="ชื่อคนยืม">
-            
-            <div class="flex gap-2">
-                <button id="btnBorrow" onclick="setEntryType('borrow')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 border border-gray-100 type-active-red">ยืม (+)</button>
-                <button id="btnReturn" onclick="setEntryType('return')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 border border-gray-100">คืน (-)</button>
-            </div>
-
-            <input type="number" id="amount" class="w-full p-4 bg-white/50 rounded-2xl border-none text-2xl font-bold text-center" placeholder="0.00">
-            <input type="text" id="detail" class="w-full p-4 bg-white/50 rounded-2xl border-none shadow-inner" placeholder="โน้ตเพิ่มเติม">
-            
-            <div class="grid grid-cols-2 gap-3">
-                <div class="space-y-1">
-                    <label class="text-[10px] text-gray-400 ml-2">วันที่ต้องคืน</label>
-                    <input type="date" id="dueDate" class="w-full p-3 bg-red-50/80 rounded-xl text-sm border-none">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] text-gray-400 ml-2">เวลาแจ้งเตือน</label>
-                    <input type="time" id="remindTime" value="09:00" class="w-full p-3 bg-white/50 rounded-xl text-sm border-none">
-                </div>
-            </div>
-            
-            <button onclick="saveToCloud()" id="btnSave" class="w-full gold-card text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">บันทึก & ตั้งเตือน 🚀</button>
+    <div class="space-y-4">
+      <!-- Sign toggle (Samsung fix) -->
+      <div>
+        <label class="lbl">ประเภท</label>
+        <div class="toggle-sign">
+          <button id="btn-plus" class="active-plus" onclick="setSign('+')">➕ ยืม</button>
+          <button id="btn-minus" onclick="setSign('-')">➖ คืน</button>
         </div>
-    </div>
+      </div>
 
-    <div id="managePage" class="hidden max-w-2xl mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4 mb-10">
-        <div class="flex justify-between items-center mb-6">
-            <select id="filterName" onchange="renderManageData()" class="p-2 bg-white/50 rounded-xl text-xs border-none max-w-[120px]"></select>
-            <div class="text-right">
-                <p class="text-xl font-bold text-red-600 tracking-tight">฿ <span id="dashTotal">0</span></p>
-            </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="lbl">ชื่อ</label>
+          <input id="inp-name" class="inp" type="text" placeholder="ชื่อลูกหนี้">
         </div>
-        <div id="manageContent" class="space-y-3 max-h-[400px] overflow-y-auto"></div>
+        <div>
+          <label class="lbl">ยอดเงิน (บาท)</label>
+          <input id="inp-amount" class="inp" type="number" placeholder="0" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="lbl">📅 วันคืน</label>
+          <input id="inp-duedate" class="inp" type="date">
+        </div>
+        <div>
+          <label class="lbl">⏰ แจ้งเตือน</label>
+          <input id="inp-alerttime" class="inp" type="time" value="09:00">
+        </div>
+      </div>
+
+      <div>
+        <label class="lbl">📝 โน้ต</label>
+        <input id="inp-note" class="inp" type="text" placeholder="รายละเอียดเพิ่มเติม...">
+      </div>
+
+      <div>
+        <label class="lbl">🖼️ รูปโปรไฟล์ (บีบอัดอัตโนมัติ)</label>
+        <div class="flex items-center gap-3">
+          <img id="preview-img" src="https://ui-avatars.com/api/?name=?&background=f59e0b&color=000&size=100" 
+               style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);">
+          <label class="btn-ghost cursor-pointer text-sm">
+            📤 เลือกรูป
+            <input type="file" id="inp-img" accept="image/*" style="display:none" onchange="compressImage(this)">
+          </label>
+          <button class="btn-ghost text-sm" onclick="clearImage()">🗑️ ล้าง</button>
+        </div>
+        <div id="img-status" class="text-xs mt-1" style="color:var(--text-secondary)"></div>
+      </div>
+
+      <button class="btn-primary w-full flex items-center justify-center gap-2" id="submit-btn" onclick="submitRecord()">
+        <span id="btn-text">💾 บันทึก & สร้าง Calendar Event</span>
+        <span id="btn-loader" style="display:none" class="loader"></span>
+      </button>
     </div>
+  </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcqYxymOEDb3Io-46itBgBKxdp5MAyFql_0kyA7-1Wg_yvqQF4RPGUtabh4NdJaApTeQ/exec"; 
-        let cachedData = null; 
-        let debtorImage = "";
-        let entryType = "borrow";
+  <!-- Records List -->
+  <div class="glass p-5">
+    <div class="flex items-center justify-between mb-4">
+      <div class="section-title">📋 รายการทั้งหมด</div>
+      <div class="flex gap-2">
+        <div class="flex glass-sm overflow-hidden">
+          <button class="tab-btn active" id="tab-all" onclick="filterRecords('all')">ทั้งหมด</button>
+          <button class="tab-btn" id="tab-debt" onclick="filterRecords('debt')">ค้าง</button>
+          <button class="tab-btn" id="tab-paid" onclick="filterRecords('paid')">คืนแล้ว</button>
+        </div>
+        <button class="btn-ghost text-sm" onclick="loadRecords()">🔄</button>
+      </div>
+    </div>
+    <div id="records-list" class="space-y-2">
+      <div class="text-center py-8" style="color:var(--text-secondary)">
+        <div class="text-3xl mb-2">⚙️</div>
+        <div class="text-sm">ตั้งค่า Apps Script URL ก่อนเริ่มใช้งาน</div>
+      </div>
+    </div>
+  </div>
 
-        // BG Setup
-        if(localStorage.getItem('fongBg')) document.body.style.backgroundImage = `url('${localStorage.getItem('fongBg')}')`;
+</div><!-- end main-wrap -->
 
-        function compressAndSetBg(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * (MAX_WIDTH / img.width);
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const compressedBg = canvas.toDataURL('image/jpeg', 0.5);
-                    document.body.style.backgroundImage = `url('${compressedBg}')`;
-                    localStorage.setItem('fongBg', compressedBg);
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+<!-- Settings Modal -->
+<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);" onclick="if(event.target===this)this.style.display='none'">
+  <div class="glass m-auto mt-16 p-6 max-w-sm mx-4" style="position:relative">
+    <h2 style="font-family:'Kanit',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">⚙️ ตั้งค่า</h2>
+    <div class="space-y-4">
+      <div>
+        <label class="lbl">🔗 Google Apps Script URL</label>
+        <input id="inp-scripturl" class="inp" type="url" placeholder="https://script.google.com/macros/s/...">
+        <div class="text-xs mt-1" style="color:var(--text-secondary)">วาง Web App URL จาก Apps Script</div>
+      </div>
+      <div>
+        <label class="lbl">🖼️ เปลี่ยนพื้นหลัง</label>
+        <div id="wallpaper-options" class="flex gap-2 flex-wrap">
+          <div class="wp-thumb" style="background:linear-gradient(135deg,#0f172a,#1e3a5f);width:48px;height:48px;border-radius:10px;cursor:pointer;" onclick="setWallpaper('gradient1',this)" title="Dark Blue"></div>
+          <div class="wp-thumb" style="background:linear-gradient(135deg,#1a0a2e,#2d1b69);width:48px;height:48px;border-radius:10px;cursor:pointer;" onclick="setWallpaper('gradient2',this)" title="Purple Night"></div>
+          <div class="wp-thumb" style="background:linear-gradient(135deg,#0a1628,#1a3a2a);width:48px;height:48px;border-radius:10px;cursor:pointer;" onclick="setWallpaper('gradient3',this)" title="Forest Dark"></div>
+          <div class="wp-thumb" style="background:linear-gradient(135deg,#2d1515,#1a0a0a);width:48px;height:48px;border-radius:10px;cursor:pointer;" onclick="setWallpaper('gradient4',this)" title="Deep Red"></div>
+          <label class="wp-thumb flex items-center justify-center text-lg cursor-pointer" style="background:var(--glass-bg);border:1px dashed var(--glass-border);" title="อัปโหลดรูปเอง">
+            ➕
+            <input type="file" accept="image/*" style="display:none" onchange="uploadWallpaper(this)">
+          </label>
+          <button class="wp-thumb flex items-center justify-center text-sm" style="background:var(--glass-bg);border:1px solid var(--glass-border);" onclick="setWallpaper('none',this)">🚫</button>
+        </div>
+      </div>
+      <button class="btn-primary w-full" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+    </div>
+  </div>
+</div>
 
-        function handleDebtorPic(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 100; canvas.height = 100;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 100, 100);
-                    debtorImage = canvas.toDataURL('image/jpeg', 0.4);
-                    document.getElementById('imagePreview').innerHTML = `<img src="${debtorImage}" class="w-full h-full object-cover">`;
-                };
-                img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+<!-- Toast -->
+<div id="toast"></div>
 
-        function setEntryType(type) {
-            entryType = type;
-            document.getElementById('btnBorrow').classList.toggle('type-active-red', type === 'borrow');
-            document.getElementById('btnReturn').classList.toggle('type-active-green', type === 'return');
-        }
+<script>
+// ========== CONFIG ==========
+const SCRIPT_URL_KEY = 'frawng_script_url';
+const WP_KEY = 'frawng_wallpaper';
+const FAVORITES_KEY = 'frawng_favorites';
+const THEME_KEY = 'frawng_theme';
 
-        async function fetchInitialData() {
-            try {
-                const res = await fetch(SCRIPT_URL);
-                cachedData = await res.json();
-                renderFavorites();
-            } catch(e) {}
-        }
+let currentSign = '+';
+let currentImgBase64 = '';
+let allRecords = [];
+let currentFilter = 'all';
 
-        function renderFavorites() {
-            const favDiv = document.getElementById('favoriteList');
-            favDiv.innerHTML = '';
-            Object.keys(cachedData.profiles).forEach(name => {
-                const div = document.createElement('div');
-                div.className = "text-center flex-shrink-0";
-                div.onclick = () => {
-                    document.getElementById('name').value = name;
-                    debtorImage = cachedData.profiles[name];
-                    document.getElementById('imagePreview').innerHTML = `<img src="${debtorImage}" class="w-full h-full object-cover">`;
-                };
-                div.innerHTML = `<div class="avatar-slot bg-cover bg-center" style="background-image:url('${cachedData.profiles[name]}')"></div><p class="text-[9px] mt-1 font-bold text-gray-700">${name}</p>`;
-                favDiv.appendChild(div);
-            });
-        }
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded', () => {
+  loadTheme();
+  loadWallpaper();
+  loadFavorites();
+  const url = localStorage.getItem(SCRIPT_URL_KEY);
+  if (url) {
+    document.getElementById('inp-scripturl').value = url;
+    loadRecords();
+  }
+  // Set default due date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 7);
+  document.getElementById('inp-duedate').value = tomorrow.toISOString().split('T')[0];
+});
 
-        async function saveToCloud() {
-            const name = document.getElementById('name').value.trim();
-            const amount = parseFloat(document.getElementById('amount').value);
-            const dueDate = document.getElementById('dueDate').value;
-            if(!name || isNaN(amount) || !dueDate) return alert("กรอกข้อมูลให้ครบนะฟร้อง");
+// ========== THEME ==========
+function loadTheme() {
+  const t = localStorage.getItem(THEME_KEY) || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('theme-toggle').textContent = t === 'dark' ? '🌙' : '☀️';
+}
+document.getElementById('theme-toggle').onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('theme-toggle').textContent = next === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem(THEME_KEY, next);
+};
 
-            document.getElementById('loader').style.display = 'flex';
-            
-            const finalAmount = entryType === 'return' ? -amount : amount;
+// ========== WALLPAPER ==========
+const GRADIENTS = {
+  gradient1: 'linear-gradient(135deg,#0f172a,#1e3a5f)',
+  gradient2: 'linear-gradient(135deg,#1a0a2e,#2d1b69)',
+  gradient3: 'linear-gradient(135deg,#0a1628,#1a3a2a)',
+  gradient4: 'linear-gradient(135deg,#2d1515,#1a0a0a)',
+};
 
-            await fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ 
-                    name, amount: finalAmount, dueDate, 
-                    detail: document.getElementById('detail').value, 
-                    image: debtorImage, 
-                    remindTime: document.getElementById('remindTime').value 
-                })
-            });
-            alert("บันทึกและตั้งทวงเงินในปฏิทินเรียบร้อย!");
-            location.reload();
-        }
+function loadWallpaper() {
+  const saved = localStorage.getItem(WP_KEY);
+  if (!saved || saved === 'none') {
+    document.getElementById('bg-layer').style.background = GRADIENTS.gradient1;
+    return;
+  }
+  if (GRADIENTS[saved]) {
+    document.getElementById('bg-layer').style.background = GRADIENTS[saved];
+  } else {
+    // It's a base64 image
+    document.getElementById('bg-layer').style.backgroundImage = `url(${saved})`;
+  }
+}
 
-        function switchPage(p) {
-            document.getElementById('adminPage').classList.toggle('hidden', p !== 'admin');
-            document.getElementById('managePage').classList.toggle('hidden', p !== 'manage');
-        }
+function setWallpaper(key, el) {
+  document.querySelectorAll('.wp-thumb').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (key === 'none') {
+    localStorage.setItem(WP_KEY, 'none');
+    document.getElementById('bg-layer').style.background = '#0f172a';
+    document.getElementById('bg-layer').style.backgroundImage = '';
+    return;
+  }
+  if (GRADIENTS[key]) {
+    document.getElementById('bg-layer').style.backgroundImage = '';
+    document.getElementById('bg-layer').style.background = GRADIENTS[key];
+    localStorage.setItem(WP_KEY, key);
+  }
+}
 
-        async function loadManagePage() {
-            switchPage('manage');
-            await fetchInitialData();
-            renderManageData();
-        }
+function uploadWallpaper(input) {
+  const file = input.files[0];
+  if (!file) return;
+  compressImageTo(file, 800, (b64) => {
+    document.getElementById('bg-layer').style.backgroundImage = `url(${b64})`;
+    document.getElementById('bg-layer').style.background = '';
+    localStorage.setItem(WP_KEY, b64);
+    showToast('✅ เปลี่ยนพื้นหลังแล้ว');
+  });
+}
 
-        function renderManageData() {
-            const container = document.getElementById('manageContent');
-            container.innerHTML = ''; let total = 0;
-            const logs = [...cachedData.logs].reverse();
-            logs.forEach(item => {
-                total += parseFloat(item.amount);
-                const card = document.createElement('div');
-                card.className = "p-3 bg-white/70 rounded-2xl flex justify-between items-center shadow-sm mb-2 border border-white/50";
-                card.innerHTML = `<div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-cover bg-center flex-shrink-0" style="background-image:url('${item.image}')"></div>
-                    <div class="truncate"><p class="text-sm font-bold text-gray-800">${item.name}</p></div>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold ${item.amount < 0 ? 'text-green-500' : 'text-red-500'}">${item.amount.toLocaleString()}</p>
-                    <button onclick="deleteRow(${item.row})" class="text-[10px] text-red-300">ลบ</button>
-                </div>`;
-                container.appendChild(card);
-            });
-            document.getElementById('dashTotal').innerText = total.toLocaleString();
-            const names = [...new Set(cachedData.logs.map(i => i.name))];
-            document.getElementById('filterName').innerHTML = '<option value="all">ทุกคน</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-        }
+document.getElementById('wp-btn').onclick = () => {
+  document.getElementById('settings-modal').style.display = 'flex';
+};
 
-        async function deleteRow(row) {
-            if(!confirm("ลบรายการนี้?")) return;
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", row }) });
-            location.reload();
-        }
+// ========== SETTINGS ==========
+document.getElementById('settings-btn').onclick = () => {
+  document.getElementById('settings-modal').style.display = 'flex';
+};
+function saveSettings() {
+  const url = document.getElementById('inp-scripturl').value.trim();
+  if (url) localStorage.setItem(SCRIPT_URL_KEY, url);
+  document.getElementById('settings-modal').style.display = 'none';
+  showToast('✅ บันทึกการตั้งค่าแล้ว');
+  if (url) loadRecords();
+}
 
-        fetchInitialData();
-    </script>
+// ========== SIGN TOGGLE (Samsung fix) ==========
+function setSign(sign) {
+  currentSign = sign;
+  document.getElementById('btn-plus').className = sign === '+' ? 'active-plus' : '';
+  document.getElementById('btn-minus').className = sign === '-' ? 'active-minus' : '';
+}
+
+// ========== IMAGE COMPRESSION ==========
+function compressImageTo(file, maxPx, callback) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      const ratio = Math.min(maxPx / w, maxPx / h, 1);
+      w = Math.round(w * ratio); h = Math.round(h * ratio);
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const origSize = (file.size / 1024).toFixed(1);
+  document.getElementById('img-status').textContent = `⏳ กำลังบีบอัด... (${origSize} KB)`;
+  compressImageTo(file, 100, (b64) => {
+    currentImgBase64 = b64;
+    document.getElementById('preview-img').src = b64;
+    const newSize = ((b64.length * 3/4) / 1024).toFixed(1);
+    document.getElementById('img-status').textContent = `✅ บีบอัดแล้ว: ${origSize} KB → ${newSize} KB`;
+  });
+}
+
+function clearImage() {
+  currentImgBase64 = '';
+  document.getElementById('preview-img').src = 'https://ui-avatars.com/api/?name=?&background=f59e0b&color=000&size=100';
+  document.getElementById('inp-img').value = '';
+  document.getElementById('img-status').textContent = '';
+}
+
+// ========== FAVORITES ==========
+function loadFavorites() {
+  const favs = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+  const bar = document.getElementById('favorites-bar');
+  const section = document.getElementById('favorites-section');
+  bar.innerHTML = '';
+  if (favs.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  favs.forEach(f => {
+    const wrap = document.createElement('div');
+    wrap.className = 'avatar-wrap';
+    wrap.innerHTML = `<img class="avatar-img" src="${f.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=f59e0b&color=000&size=100`}" alt="${f.name}"><div class="avatar-name">${f.name}</div>`;
+    wrap.onclick = () => {
+      document.getElementById('inp-name').value = f.name;
+      if (f.img) {
+        currentImgBase64 = f.img;
+        document.getElementById('preview-img').src = f.img;
+      }
+      showToast(`✅ Auto-fill: ${f.name}`);
+    };
+    bar.appendChild(wrap);
+  });
+}
+
+function saveFavorite(name, img) {
+  let favs = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+  favs = favs.filter(f => f.name !== name);
+  favs.unshift({ name, img });
+  if (favs.length > 6) favs = favs.slice(0, 6);
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
+  loadFavorites();
+}
+
+// ========== SUBMIT ==========
+async function submitRecord() {
+  const scriptUrl = localStorage.getItem(SCRIPT_URL_KEY);
+  if (!scriptUrl) { showToast('❌ กรุณาตั้งค่า Script URL ก่อน'); document.getElementById('settings-modal').style.display='flex'; return; }
+
+  const name = document.getElementById('inp-name').value.trim();
+  const amount = parseFloat(document.getElementById('inp-amount').value);
+  const duedate = document.getElementById('inp-duedate').value;
+  const alerttime = document.getElementById('inp-alerttime').value;
+  const note = document.getElementById('inp-note').value.trim();
+
+  if (!name) { showToast('❌ กรุณากรอกชื่อ'); return; }
+  if (!amount || amount <= 0) { showToast('❌ กรุณากรอกยอดเงิน'); return; }
+
+  const finalAmount = currentSign === '+' ? amount : -amount;
+  const now = new Date().toISOString();
+
+  setLoading(true);
+  try {
+    const payload = {
+      action: 'addRecord',
+      date: now,
+      name,
+      amount: finalAmount,
+      duedate,
+      alerttime,
+      status: currentSign === '+' ? 'ยืม' : 'คืน',
+      note,
+      image: currentImgBase64
+    };
+
+    const res = await fetch(scriptUrl, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast(`✅ บันทึกแล้ว${data.calendarEvent ? ' + สร้าง Calendar Event แล้ว' : ''}`);
+      saveFavorite(name, currentImgBase64);
+      clearForm();
+      loadRecords();
+    } else {
+      showToast('❌ เกิดข้อผิดพลาด: ' + (data.error || 'Unknown'));
+    }
+  } catch (e) {
+    showToast('❌ ไม่สามารถเชื่อมต่อได้: ' + e.message);
+  }
+  setLoading(false);
+}
+
+function clearForm() {
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-amount').value = '';
+  document.getElementById('inp-note').value = '';
+  clearImage();
+}
+
+function setLoading(v) {
+  document.getElementById('submit-btn').disabled = v;
+  document.getElementById('btn-text').style.display = v ? 'none' : 'inline';
+  document.getElementById('btn-loader').style.display = v ? 'inline-block' : 'none';
+}
+
+// ========== LOAD RECORDS ==========
+async function loadRecords() {
+  const scriptUrl = localStorage.getItem(SCRIPT_URL_KEY);
+  if (!scriptUrl) return;
+  const list = document.getElementById('records-list');
+  list.innerHTML = '<div class="text-center py-4"><div class="loader mx-auto"></div></div>';
+  try {
+    const res = await fetch(scriptUrl + '?action=getRecords');
+    const data = await res.json();
+    if (data.success) {
+      allRecords = data.records || [];
+      updateSummary();
+      renderRecords();
+    } else {
+      list.innerHTML = `<div class="text-center py-4" style="color:var(--text-secondary)">❌ ${data.error || 'โหลดไม่สำเร็จ'}</div>`;
+    }
+  } catch (e) {
+    list.innerHTML = `<div class="text-center py-4" style="color:var(--text-secondary)">❌ เชื่อมต่อไม่ได้<br><span class="text-xs">${e.message}</span></div>`;
+  }
+}
+
+function filterRecords(f) {
+  currentFilter = f;
+  ['all','debt','paid'].forEach(id => {
+    document.getElementById('tab-'+id).className = 'tab-btn' + (id === f ? ' active' : '');
+  });
+  renderRecords();
+}
+
+function renderRecords() {
+  const list = document.getElementById('records-list');
+  let records = allRecords;
+  if (currentFilter === 'debt') records = records.filter(r => r.status === 'ยืม');
+  if (currentFilter === 'paid') records = records.filter(r => r.status === 'คืน');
+
+  if (records.length === 0) {
+    list.innerHTML = '<div class="text-center py-8" style="color:var(--text-secondary)">📭 ไม่มีรายการ</div>';
+    return;
+  }
+
+  list.innerHTML = records.map((r, i) => {
+    const isDebt = parseFloat(r.amount) > 0;
+    const imgSrc = r.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name||'?')}&background=f59e0b&color=000&size=100`;
+    const amtText = new Intl.NumberFormat('th-TH', {style:'currency',currency:'THB'}).format(Math.abs(r.amount));
+    const dateStr = r.date ? new Date(r.date).toLocaleDateString('th-TH', {day:'2-digit',month:'short',year:'2-digit'}) : '';
+    const dueStr = r.duedate ? `คืน: ${new Date(r.duedate+'T00:00:00').toLocaleDateString('th-TH',{day:'2-digit',month:'short'})}` : '';
+    return `<div class="record-card">
+      <img src="${imgSrc}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid ${isDebt?'#ef4444':'#10b981'};flex-shrink:0;">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-weight:600;font-size:15px;">${r.name}</span>
+          <span class="badge ${isDebt?'badge-debt':'badge-paid'}">${r.status}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${dateStr}${dueStr?' · '+dueStr:''}</div>
+        ${r.note ? `<div style="font-size:12px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📝 ${r.note}</div>` : ''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="${isDebt?'amount-negative':'amount-positive'}" style="font-size:16px;">${isDebt?'-':'+'} ${amtText}</div>
+        ${r.duedate ? `<button class="btn-ghost text-xs mt-1" onclick="markPaid(${i})" style="font-size:11px;padding:4px 8px;">✅ ทำเครื่องหมายคืนแล้ว</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSummary() {
+  const debt = allRecords.filter(r => r.status==='ยืม').reduce((s,r) => s + Math.abs(parseFloat(r.amount)||0), 0);
+  const paid = allRecords.filter(r => r.status==='คืน').reduce((s,r) => s + Math.abs(parseFloat(r.amount)||0), 0);
+  const fmt = v => new Intl.NumberFormat('th-TH', {style:'currency',currency:'THB',minimumFractionDigits:0}).format(v);
+  document.getElementById('sum-debt').textContent = fmt(debt);
+  document.getElementById('sum-paid').textContent = fmt(paid);
+  document.getElementById('sum-remaining').textContent = fmt(Math.max(0, debt - paid));
+}
+
+async function markPaid(idx) {
+  const scriptUrl = localStorage.getItem(SCRIPT_URL_KEY);
+  const record = allRecords[idx];
+  if (!scriptUrl || !record) return;
+  setLoading(true);
+  try {
+    const res = await fetch(scriptUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'updateStatus', rowIndex: record._rowIndex, status: 'คืน' })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('✅ อัปเดตสถานะแล้ว'); loadRecords(); }
+    else showToast('❌ ' + (data.error || 'ผิดพลาด'));
+  } catch(e) { showToast('❌ ' + e.message); }
+  setLoading(false);
+}
+
+// ========== TOAST ==========
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+
 </body>
 </html>
