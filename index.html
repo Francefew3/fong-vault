@@ -3,69 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คลังของฟร้อง Pro - Management</title>
+    <title>คลังของฟร้อง Pro - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; background-color: #FDFCF0; }
         .gold-card { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="p-4">
 
     <div class="max-w-md mx-auto mb-6 flex gap-2">
-        <button onclick="switchPage('admin')" class="flex-1 py-2 rounded-full bg-yellow-500 text-white font-bold shadow-md">บันทึก</button>
-        <button onclick="loadManagePage()" class="flex-1 py-2 rounded-full bg-gray-800 text-white font-bold shadow-md">คลังทั้งหมด</button>
+        <button onclick="switchPage('admin')" class="flex-1 py-3 rounded-2xl bg-yellow-500 text-white font-bold shadow-lg transform active:scale-95 transition">📝 บันทึกใหม่</button>
+        <button onclick="loadManagePage()" class="flex-1 py-3 rounded-2xl bg-gray-800 text-white font-bold shadow-lg transform active:scale-95 transition">⚙️ จัดการคลัง</button>
     </div>
 
-    <div id="invoicePage" class="hidden max-w-sm mx-auto mt-10 fade-in">
+    <div id="invoicePage" class="hidden max-w-sm mx-auto mt-6 fade-in">
         <div class="bg-white rounded-[40px] shadow-2xl overflow-hidden border-4 border-[#F3E5AB] p-8 text-center">
             <div class="text-6xl mb-4">🏠</div>
             <h2 class="text-2xl font-bold text-[#B8860B]">คลังของฟร้อง</h2>
-            <p class="text-gray-500 text-sm mb-6">ยอดสะสมล่าสุดจ้า ✨</p>
+            <p class="text-gray-500 text-sm mb-6">สรุปยอดที่ต้องคืนล่าสุด ✨</p>
             <div class="bg-[#FFFDF5] rounded-3xl py-6 mb-6 shadow-inner border border-yellow-100">
-                <span class="text-xs text-gray-400 uppercase tracking-widest">ยอดรวมที่ค้างอยู่</span>
+                <span class="text-xs text-gray-400 uppercase tracking-widest">ยอดรวมคงเหลือ</span>
                 <div class="text-4xl font-bold text-[#D4AF37] mt-2">฿ <span id="displayAmount">0</span></div>
             </div>
-            <img id="qrImage" src="" class="mx-auto w-48 h-48 rounded-2xl border-4 border-white shadow-md mb-4">
-            <button onclick="showThankYou()" class="w-full bg-yellow-500 text-white py-4 rounded-2xl font-bold">โอนเรียบร้อยแล้ว ✅</button>
+            <img id="qrImage" src="" class="mx-auto w-48 h-48 rounded-2xl border-4 border-white shadow-md mb-6">
+            <button onclick="switchPage('thankYou')" class="w-full bg-yellow-500 text-white py-4 rounded-2xl font-bold shadow-md">โอนเรียบร้อยแล้ว ✅</button>
         </div>
     </div>
 
     <div id="adminPage" class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl border border-gray-100 fade-in">
         <h1 class="text-2xl font-bold text-[#B8860B] mb-6 flex items-center">💰 บันทึกเข้าคลังฟร้อง</h1>
         <div class="space-y-4">
-            <input type="text" id="name" class="w-full p-4 bg-gray-50 rounded-2xl border-none" placeholder="ชื่อลูกหนี้">
-            <input type="number" id="amount" class="w-full p-4 bg-gray-50 rounded-2xl border-none" placeholder="จำนวนเงิน (คืนเงินให้ใส่ติดลบ เช่น -100)">
-            <input type="text" id="detail" class="w-full p-4 bg-gray-50 rounded-2xl border-none" placeholder="ยืมไปทำอะไร / ส่วนไหน">
+            <div>
+                <label class="text-xs text-gray-400 ml-2">ชื่อลูกหนี้</label>
+                <input type="text" id="name" class="w-full p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-yellow-500" placeholder="ระบุชื่อคนยืม/คนคืน">
+            </div>
+            <div>
+                <label class="text-xs text-gray-400 ml-2">จำนวนเงิน (คืนเงินใส่ติดลบ เช่น -100)</label>
+                <input type="number" id="amount" class="w-full p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
+            </div>
+            <div>
+                <label class="text-xs text-gray-400 ml-2">ยืมจากส่วนไหน / รายละเอียด</label>
+                <input type="text" id="detail" class="w-full p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-yellow-500" placeholder="เช่น กองกลาง, ค่าข้าว">
+            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="text-xs text-red-500 font-bold ml-2">วันที่คืนเงิน *</label>
+                    <label class="text-xs text-red-500 font-bold ml-2">วันที่ต้องคืน *</label>
                     <input type="date" id="dueDate" class="w-full p-3 bg-red-50 rounded-xl text-sm border-none">
                 </div>
                 <div>
                     <label class="text-xs text-gray-400 ml-2">เวลาแจ้งเตือน</label>
-                    <input type="time" id="remindTime" value="09:00" class="p-3 bg-gray-50 rounded-xl text-sm border-none w-full">
+                    <input type="time" id="remindTime" value="09:00" class="w-full p-3 bg-gray-50 rounded-xl text-sm border-none">
                 </div>
             </div>
-            <button onclick="saveToCloud()" id="btnSave" class="w-full bg-[#D4AF37] text-white py-4 rounded-2xl font-bold shadow-lg">บันทึกข้อมูล 🚀</button>
+            <button onclick="saveToCloud()" id="btnSave" class="w-full gold-card text-white py-4 rounded-2xl font-bold shadow-lg mt-4">บันทึกข้อมูล 🚀</button>
         </div>
     </div>
 
     <div id="managePage" class="hidden max-w-2xl mx-auto bg-white p-6 rounded-3xl shadow-xl border border-gray-100 fade-in">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">📋 รายการในคลัง</h2>
+            <h2 class="text-xl font-bold">📋 รายการทั้งหมด</h2>
             <div class="text-right">
-                <p class="text-xs text-gray-400">ยอดค้างรวม</p>
-                <p class="text-lg font-bold text-red-500">฿ <span id="dashTotal">0</span></p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest">ยอดคงเหลือรวม</p>
+                <p class="text-xl font-bold text-red-500">฿ <span id="dashTotal">0</span></p>
             </div>
         </div>
-        <div class="overflow-y-auto max-h-96">
+        <div class="overflow-y-auto max-h-[450px]">
             <table class="w-full text-left text-sm">
                 <thead>
-                    <tr class="border-b text-gray-400">
+                    <tr class="border-b text-gray-400 uppercase text-[10px]">
                         <th class="pb-2">ชื่อ</th>
                         <th class="pb-2">ยอด</th>
                         <th class="pb-2">โน้ต</th>
@@ -77,15 +86,15 @@
         </div>
     </div>
 
-    <div id="thankYouPage" class="hidden text-center mt-20">
+    <div id="thankYouPage" class="hidden text-center mt-20 fade-in">
         <div class="text-8xl mb-6">💖</div>
         <h2 class="text-3xl font-bold text-[#D4AF37]">ได้รับเรียบร้อย!</h2>
-        <button onclick="notifyFong()" class="mt-8 bg-[#06C755] text-white px-8 py-3 rounded-full font-bold">แจ้งฟร้องใน LINE 📱</button>
+        <button onclick="notifyFong()" class="mt-8 bg-[#06C755] text-white px-8 py-3 rounded-full font-bold shadow-lg">แจ้งฟร้องใน LINE 📱</button>
     </div>
 
     <script>
         const PROMPTPAY_ID = "0924499440"; 
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3o47YcRy_QNtpfKobke98_QCAQxIsQs3MF1tebprro_shKEJt1XhNuzPXDqSznfS1Ug/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL25Ljf0kxs0oEXWoCn-Ga0EhU-oCYSYmnmhHGBf7_dUazHmdcfwQspDkhhsxslvt3Kw/exec";
 
         const urlParams = new URLSearchParams(window.location.search);
         const urlName = urlParams.get('name');
@@ -107,8 +116,9 @@
             const amount = document.getElementById('amount').value;
             const dueDate = document.getElementById('dueDate').value;
             const detail = document.getElementById('detail').value;
+            const remindTime = document.getElementById('remindTime').value;
 
-            if (!name || !amount || !dueDate) return alert("❌ ฟร้องลืมกรอก ชื่อ, ยอดเงิน หรือ วันที่คืนจ้า!");
+            if (!name || !amount || !dueDate) return alert("⚠️ ฟร้องลืมกรอก ชื่อ, ยอดเงิน หรือ วันคืนจ้า!");
 
             const btn = document.getElementById('btnSave');
             btn.disabled = true; btn.innerText = "กำลังบันทึก... ⏳";
@@ -116,9 +126,9 @@
             try {
                 await fetch(SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
-                    body: JSON.stringify({ name, amount, dueDate, detail, remindTime: document.getElementById('remindTime').value })
+                    body: JSON.stringify({ name, amount, dueDate, detail, remindTime })
                 });
-                alert("✅ บันทึกเข้าคลังเรียบร้อย!");
+                alert("✅ บันทึกและตั้งเตือนเรียบร้อย!");
                 location.reload();
             } catch (e) { alert("Error!"); btn.disabled = false; }
         }
@@ -126,36 +136,37 @@
         async function loadManagePage() {
             switchPage('manage');
             const tbody = document.getElementById('manageTableBody');
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">โหลดข้อมูล...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-10 opacity-50">กำลังโหลดคลัง...</td></tr>';
             
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            
-            let total = 0;
-            tbody.innerHTML = '';
-            data.reverse().forEach(item => {
-                total += parseFloat(item.amount);
-                const tr = document.createElement('tr');
-                tr.className = "border-b";
-                tr.innerHTML = `
-                    <td class="py-3 font-bold">${item.name}</td>
-                    <td class="py-3 ${item.amount < 0 ? 'text-green-500' : 'text-red-500'} font-bold">${item.amount}</td>
-                    <td class="py-3 text-xs text-gray-400">${item.detail || '-'}</td>
-                    <td class="py-3 text-right"><button onclick="deleteRow(${item.row})" class="text-red-400">🗑️</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('dashTotal').innerText = total.toLocaleString();
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+                
+                let total = 0;
+                tbody.innerHTML = '';
+                data.reverse().forEach(item => {
+                    total += parseFloat(item.amount);
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b last:border-none";
+                    tr.innerHTML = `
+                        <td class="py-4 font-bold text-gray-700">${item.name}</td>
+                        <td class="py-4 font-bold ${item.amount < 0 ? 'text-green-500' : 'text-red-500'}">${item.amount}</td>
+                        <td class="py-4 text-[10px] text-gray-400">${item.detail || '-'}</td>
+                        <td class="py-4 text-right"><button onclick="deleteRow(${item.row})" class="text-red-300 hover:text-red-600 transition">🗑️</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('dashTotal').innerText = total.toLocaleString();
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-red-400">โหลดไม่สำเร็จ</td></tr>'; }
         }
 
         async function deleteRow(row) {
-            if (!confirm("จะลบรายการนี้จริงหรอฟร้อง?")) return;
+            if (!confirm("ฟร้องจะลบรายการนี้จริงหรอ?")) return;
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", row: row }) });
-            alert("ลบแล้วจ้า!");
+            alert("ลบออกแล้วจ้า!");
             loadManagePage();
         }
 
-        function showThankYou() { switchPage('thankYou'); }
         function notifyFong() { 
             const msg = "ฟร้องจ๋า เค้าโอนเงินคืนเข้าคลังเรียบร้อยแล้วน้า เช็คยอดได้เลย! ✅";
             window.open(`https://line.me/R/msg/text/?${encodeURIComponent(msg)}`);
