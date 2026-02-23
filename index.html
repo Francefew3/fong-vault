@@ -3,141 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คลังของฟร้อง Pro 6.5</title>
+    <title>คลังของฟร้อง Pro Max 7.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kanit', sans-serif; transition: background 0.5s; background-size: cover; background-position: center; min-height: 100vh; background-attachment: fixed; }
-        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.4); }
+        body { font-family: 'Kanit', sans-serif; transition: background 0.6s ease; background-size: cover; background-position: center; min-height: 100vh; background-attachment: fixed; }
+        .glass { background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4); }
         .gold-card { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
-        .avatar-slot { width: 60px; height: 60px; border-radius: 50%; border: 3px solid white; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .type-btn { transition: 0.3s; border: 2px solid transparent; }
-        .type-active-red { background-color: #ef4444; color: white; border-color: #b91c1c; transform: scale(1.05); }
-        .type-active-green { background-color: #22c55e; color: white; border-color: #15803d; transform: scale(1.05); }
+        .avatar-slot { width: 55px; height: 55px; border-radius: 50%; border: 3px solid white; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; }
+        .avatar-slot:active { transform: scale(0.9); }
+        .type-active-red { background-color: #ef4444 !important; color: white !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+        .type-active-green { background-color: #22c55e !important; color: white !important; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body id="mainBody">
 
-    <div class="fixed top-4 right-4 z-50 flex gap-2">
+    <div class="fixed top-4 right-4 z-50">
         <input type="file" id="bgInput" accept="image/*" class="hidden" onchange="changeCustomBg(event)">
-        <button onclick="document.getElementById('bgInput').click()" class="p-2 bg-black/50 text-white rounded-full text-[10px] shadow-lg">🖼️ เปลี่ยนพื้นหลัง</button>
+        <button onclick="document.getElementById('bgInput').click()" class="p-2 bg-black/40 text-white rounded-full text-[10px] backdrop-blur-md border border-white/20 shadow-lg">🖼️ เปลี่ยนพื้นหลัง</button>
     </div>
 
-    <div class="max-w-md mx-auto mb-4 pt-10 px-4">
-        <div class="flex gap-2">
-            <button onclick="switchPage('admin')" class="flex-1 py-3 rounded-2xl bg-yellow-500 text-white font-bold shadow-lg">📝 บันทึก</button>
-            <button onclick="loadManagePage()" class="flex-1 py-3 rounded-2xl bg-gray-900 text-white font-bold shadow-lg">🔍 จัดการ</button>
+    <div class="max-w-md mx-auto mb-4 pt-12 px-4 flex gap-2">
+        <button onclick="switchPage('admin')" class="flex-1 py-3 rounded-2xl bg-yellow-500 text-white font-bold shadow-lg active:scale-95 transition">📝 บันทึก</button>
+        <button onclick="loadManagePage()" class="flex-1 py-3 rounded-2xl bg-gray-900 text-white font-bold shadow-lg active:scale-95 transition">🔍 จัดการ</button>
+    </div>
+
+    <div id="adminPage" class="max-w-md mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4 mb-10 fade-in">
+        <h2 class="text-xs font-bold text-[#B8860B] mb-3 uppercase tracking-wider">⭐ ลูกหนี้รายโปรด</h2>
+        <div id="favoriteList" class="flex gap-4 overflow-x-auto pb-4 mb-4 scrollbar-hide">
+            <p class="text-gray-400 text-[10px] py-4">กำลังโหลดรายชื่อ...</p>
         </div>
-    </div>
-
-    <div id="adminPage" class="max-w-md mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4 mb-10">
-        <h2 class="text-sm font-bold text-[#B8860B] mb-3">⭐ ลูกหนี้รายโปรด (แตะเพื่อเลือก)</h2>
-        <div id="favoriteList" class="flex gap-4 overflow-x-auto pb-4 mb-4 scrollbar-hide"></div>
 
         <div class="space-y-4">
             <div class="text-center">
-                <div id="imagePreview" onclick="document.getElementById('fileInput').click()" class="w-24 h-24 bg-gray-200 rounded-full mx-auto flex items-center justify-center cursor-pointer border-4 border-white shadow-md overflow-hidden bg-cover bg-center">
-                    <span id="picLabel" class="text-[10px] text-gray-500">เลือกรูป</span>
+                <div id="imagePreview" onclick="document.getElementById('fileInput').click()" class="w-24 h-24 bg-gray-200 rounded-full mx-auto flex items-center justify-center cursor-pointer border-4 border-white shadow-md overflow-hidden bg-cover bg-center transition-all">
+                    <span id="picLabel" class="text-[10px] text-gray-500">เลือกรูปหน้า</span>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleDebtorPic(event)">
             </div>
 
-            <input type="text" id="name" class="w-full p-4 bg-white/50 rounded-2xl border-none shadow-sm" placeholder="ชื่อลูกหนี้">
+            <input type="text" id="name" class="w-full p-4 bg-white/60 rounded-2xl border-none shadow-inner focus:ring-2 focus:ring-yellow-400" placeholder="ชื่อลูกหนี้">
             
             <div class="flex gap-2">
-                <button id="btnBorrow" onclick="setEntryType('borrow')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 type-btn type-active-red">ยืม (+)</button>
-                <button id="btnReturn" onclick="setEntryType('return')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 type-btn">คืน (-)</button>
+                <button id="btnBorrow" onclick="setEntryType('borrow')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 border border-gray-50 type-active-red transition-all">ยืม (+)</button>
+                <button id="btnReturn" onclick="setEntryType('return')" class="flex-1 py-3 rounded-xl font-bold bg-white text-gray-400 border border-gray-50 transition-all">คืน (-)</button>
             </div>
 
-            <input type="number" id="amount" class="w-full p-4 bg-white/50 rounded-2xl border-none text-2xl font-bold text-center" placeholder="0.00">
-            <input type="text" id="detail" class="w-full p-4 bg-white/50 rounded-2xl border-none" placeholder="รายละเอียด">
+            <input type="number" id="amount" class="w-full p-4 bg-white/60 rounded-2xl border-none text-2xl font-bold text-center focus:ring-2 focus:ring-yellow-400" placeholder="0.00">
+            <input type="text" id="detail" class="w-full p-4 bg-white/60 rounded-2xl border-none shadow-inner" placeholder="รายละเอียด">
             
             <div class="grid grid-cols-2 gap-4">
                 <input type="date" id="dueDate" class="p-3 bg-red-50/50 rounded-xl text-sm border-none">
-                <input type="time" id="remindTime" value="09:00" class="p-3 bg-white/50 rounded-xl text-sm border-none">
+                <input type="time" id="remindTime" value="09:00" class="p-3 bg-white/60 rounded-xl text-sm border-none">
             </div>
             
-            <button onclick="saveToCloud()" id="btnSave" class="w-full gold-card text-white py-4 rounded-2xl font-bold shadow-lg transform active:scale-95 transition">บันทึกข้อมูล 🚀</button>
+            <button onclick="saveToCloud()" id="btnSave" class="w-full gold-card text-white py-4 rounded-2xl font-bold shadow-lg transform active:scale-95 transition mt-2">บันทึกด่วน 🚀</button>
         </div>
     </div>
 
-    <div id="managePage" class="hidden max-w-2xl mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4">
+    <div id="managePage" class="hidden max-w-2xl mx-auto glass p-6 rounded-[35px] shadow-2xl mx-4 mb-10 fade-in">
         <div class="flex justify-between items-center mb-6">
-            <select id="filterName" onchange="renderManageData()" class="p-2 bg-white/50 rounded-xl text-xs border-none"></select>
-            <div class="text-right"><p class="text-xl font-bold text-red-600">฿ <span id="dashTotal">0</span></p></div>
+            <select id="filterName" onchange="renderManageData()" class="p-2 bg-white/60 rounded-xl text-xs border-none shadow-sm"></select>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-400 uppercase">ยอดรวม</p>
+                <p class="text-xl font-bold text-red-600">฿ <span id="dashTotal">0</span></p>
+            </div>
         </div>
-        <div id="manageContent" class="space-y-3 max-h-[450px] overflow-y-auto"></div>
+        <div id="manageContent" class="space-y-3 max-h-[450px] overflow-y-auto pr-1 scrollbar-hide"></div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFZN8vLeTBL3h-xSgG8tvVHSLNbzCoYSUyjsn1oHROenrdoYOjVsbEj1jVTxkZuaK5ug/exec";
-        let masterData = { logs: [], profiles: {} };
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFXYtE1IcUvcW7niXtg3bzUJi_ml3NpyfIWeebmKiPdmLRwMxvpZB5CQ3lupjPWEH8Ww/exec"; 
+        let cachedData = null; 
         let debtorImage = "";
-        let entryType = "borrow"; // ค่าเริ่มต้นคือ ยืม
+        let entryType = "borrow";
 
-        function setEntryType(type) {
-            entryType = type;
-            document.getElementById('btnBorrow').className = `flex-1 py-3 rounded-xl font-bold type-btn ${type === 'borrow' ? 'type-active-red' : 'bg-white text-gray-400'}`;
-            document.getElementById('btnReturn').className = `flex-1 py-3 rounded-xl font-bold type-btn ${type === 'return' ? 'type-active-green' : 'bg-white text-gray-400'}`;
-            document.getElementById('amount').style.color = (type === 'borrow') ? '#ef4444' : '#22c55e';
+        // 1. ระบบวอลเปเปอร์แบบเลือกรูปเอง
+        if(localStorage.getItem('fongBg')) {
+            document.body.style.backgroundImage = `url('${localStorage.getItem('fongBg')}')`;
+        } else {
+            document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200')";
         }
 
-        if(localStorage.getItem('fongBg')) document.body.style.backgroundImage = `url('${localStorage.getItem('fongBg')}')`;
         function changeCustomBg(e) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                document.body.style.backgroundImage = `url('${event.target.result}')`;
-                localStorage.setItem('fongBg', event.target.result);
+                const imgData = event.target.result;
+                document.body.style.backgroundImage = `url('${imgData}')`;
+                localStorage.setItem('fongBg', imgData);
             };
             reader.readAsDataURL(e.target.files[0]);
         }
 
+        // 2. ระบบบีบอัดรูปภาพ "ขั้นสุด" (Ultra-Small JPEG 40%)
         function handleDebtorPic(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                debtorImage = ev.target.result;
-                document.getElementById('imagePreview').innerHTML = `<img src="${debtorImage}" class="w-full h-full object-cover">`;
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 120; // ขนาดเล็กมากเพื่อความเร็ว
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    debtorImage = canvas.toDataURL('image/jpeg', 0.4); // บีบอัด 40%
+                    document.getElementById('imagePreview').innerHTML = `<img src="${debtorImage}" class="w-full h-full object-cover">`;
+                };
+                img.src = event.target.result;
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         }
 
-        async function fetchInitialData() {
+        function setEntryType(type) {
+            entryType = type;
+            document.getElementById('btnBorrow').classList.toggle('type-active-red', type === 'borrow');
+            document.getElementById('btnReturn').classList.toggle('type-active-green', type === 'return');
+            document.getElementById('amount').style.color = (type === 'borrow') ? '#ef4444' : '#22c55e';
+        }
+
+        // 3. โหลดข้อมูลแบบ Smart Cache
+        async function fetchInitialData(force = false) {
+            if (!force && cachedData) return cachedData;
             try {
                 const res = await fetch(SCRIPT_URL);
-                masterData = await res.json();
-                const favDiv = document.getElementById('favoriteList');
-                favDiv.innerHTML = '';
-                Object.keys(masterData.profiles).forEach(name => {
-                    const img = masterData.profiles[name];
-                    const div = document.createElement('div');
-                    div.className = "text-center flex-shrink-0";
-                    div.onclick = () => {
-                        document.getElementById('name').value = name;
-                        debtorImage = img;
-                        document.getElementById('imagePreview').innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
-                    };
-                    div.innerHTML = `<div class="avatar-slot bg-cover bg-center" style="background-image:url('${img}')"></div><p class="text-[9px] mt-1 font-bold text-gray-600">${name}</p>`;
-                    favDiv.appendChild(div);
-                });
-            } catch(e) {}
+                cachedData = await res.json();
+                renderFavorites();
+                return cachedData;
+            } catch(e) { console.error("โหลดข้อมูลผิดพลาด"); }
+        }
+
+        function renderFavorites() {
+            if (!cachedData) return;
+            const favDiv = document.getElementById('favoriteList');
+            favDiv.innerHTML = '';
+            const profiles = cachedData.profiles;
+            if (Object.keys(profiles).length === 0) {
+                favDiv.innerHTML = '<p class="text-gray-400 text-[10px] py-4">ไม่มีรายการโปรด</p>';
+                return;
+            }
+            Object.keys(profiles).forEach(name => {
+                const img = profiles[name];
+                const div = document.createElement('div');
+                div.className = "text-center flex-shrink-0 fade-in";
+                div.onclick = () => {
+                    document.getElementById('name').value = name;
+                    debtorImage = img;
+                    document.getElementById('imagePreview').innerHTML = `<img src="${img}" class="w-full h-full object-cover">`;
+                };
+                div.innerHTML = `<div class="avatar-slot bg-cover bg-center" style="background-image:url('${img}')"></div><p class="text-[9px] mt-1 font-bold text-gray-700">${name}</p>`;
+                favDiv.appendChild(div);
+            });
         }
 
         async function saveToCloud() {
-            const name = document.getElementById('name').value;
+            const name = document.getElementById('name').value.trim();
             let amount = parseFloat(document.getElementById('amount').value);
             const dueDate = document.getElementById('dueDate').value;
-            if(!name || isNaN(amount) || !dueDate) return alert("กรอกข้อมูลไม่ครบ");
+            if(!name || isNaN(amount) || !dueDate) return alert("กรอกข้อมูลให้ครบก่อนนะฟร้อง!");
 
-            // ถ้าเลือกเป็น "คืน" ให้แปลงค่าเป็นติดลบทันที
             if(entryType === 'return' && amount > 0) amount = -amount;
 
             const btn = document.getElementById('btnSave');
-            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            await fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ name, amount, dueDate, detail: document.getElementById('detail').value, image: debtorImage, remindTime: document.getElementById('remindTime').value })
-            });
-            alert("บันทึกสำเร็จ!"); location.reload();
+            btn.disabled = true; btn.innerText = "กำลังบินไปบันทึก... 🚀";
+            
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ 
+                        name, amount, dueDate, 
+                        detail: document.getElementById('detail').value, 
+                        image: debtorImage, 
+                        remindTime: document.getElementById('remindTime').value 
+                    })
+                });
+                cachedData = null; // รีเซ็ตแคช
+                alert("บันทึกสำเร็จ!");
+                location.reload();
+            } catch (e) {
+                alert("เกิดข้อผิดพลาด ลองใหม่อีกครั้งนะ");
+                btn.disabled = false; btn.innerText = "บันทึกด่วน 🚀";
+            }
         }
 
         function switchPage(p) {
@@ -147,41 +199,36 @@
 
         async function loadManagePage() {
             switchPage('manage');
-            const res = await fetch(SCRIPT_URL);
-            masterData = await res.json();
-            const names = [...new Set(masterData.logs.map(i => i.name))];
-            document.getElementById('filterName').innerHTML = '<option value="all">ทุกคน</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            const container = document.getElementById('manageContent');
+            if (!cachedData) {
+                container.innerHTML = '<div class="text-center py-10 opacity-50">กำลังดึงคลัง... ⏳</div>';
+                await fetchInitialData(true);
+            }
+            
+            const names = [...new Set(cachedData.logs.map(i => i.name))];
+            document.getElementById('filterName').innerHTML = '<option value="all">ลูกหนี้ทุกคน</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             renderManageData();
         }
 
         function renderManageData() {
             const filter = document.getElementById('filterName').value;
             const container = document.getElementById('manageContent');
-            container.innerHTML = ''; let total = 0;
-            masterData.logs.filter(i => filter === 'all' || i.name === filter).reverse().forEach(item => {
-                total += parseFloat(item.amount);
+            container.innerHTML = ''; 
+            let total = 0;
+            
+            const logs = [...cachedData.logs].reverse();
+            const filtered = logs.filter(i => filter === 'all' || i.name === filter);
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-center py-10 text-gray-400">ไม่มีประวัติรายการ</p>';
+            }
+
+            filtered.forEach(item => {
+                const val = parseFloat(item.amount);
+                total += val;
                 const card = document.createElement('div');
-                card.className = "p-3 bg-white/70 rounded-2xl flex justify-between items-center shadow-sm mb-2";
+                card.className = "p-3 bg-white/70 rounded-2xl flex justify-between items-center shadow-sm mb-2 fade-in border border-white/50";
                 card.innerHTML = `<div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-cover bg-center" style="background-image:url('${item.image}')"></div>
-                    <div><p class="text-sm font-bold">${item.name}</p><p class="text-[9px] text-gray-400">${item.detail}</p></div>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold ${item.amount < 0 ? 'text-green-500' : 'text-red-500'}">${item.amount}</p>
-                    <button onclick="deleteRow(${item.row})" class="text-[10px] text-gray-300">ลบ</button>
-                </div>`;
-                container.appendChild(card);
-            });
-            document.getElementById('dashTotal').innerText = total.toLocaleString();
-        }
-
-        async function deleteRow(row) {
-            if(!confirm("ลบรายการนี้?")) return;
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", row }) });
-            loadManagePage();
-        }
-
-        fetchInitialData();
-    </script>
-</body>
-</html>
+                    <div class="w-10 h-10 rounded-full bg-cover bg-center shadow-inner border border-white" style="background-image:url('${item.image}')"></div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-800">${item.name}</p>
