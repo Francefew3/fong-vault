@@ -76,7 +76,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNPDvid9JkodW5iGIzdX99aBX1Rl5U3v6Dt4ayWqjNE196fFdWwg-tvw0G5FKfNMqjNA/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTivPQ6-jCyVHLcihWOUbOMKBNjlibChWJF290ewIgDT7am2CXs1u1EcmoFVEnmpU/exec"; 
         let cachedData = null; 
         let debtorImage = "";
         let entryType = "borrow";
@@ -232,3 +232,28 @@
                     <div class="w-10 h-10 rounded-full bg-cover bg-center shadow-inner border border-white" style="background-image:url('${item.image}')"></div>
                     <div>
                         <p class="text-sm font-bold text-gray-800">${item.name}</p>
+                        <p class="text-[9px] text-gray-500">${item.detail || '-'}</p>
+                        <p class="text-[8px] text-gray-400">${new Date(item.date).toLocaleDateString('th-TH')}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold ${val < 0 ? 'text-green-500' : 'text-red-500'}">${val.toLocaleString()}</p>
+                    <button onclick="deleteRow(${item.row})" class="text-[10px] text-red-300 hover:text-red-500 transition">ลบ</button>
+                </div>`;
+                container.appendChild(card);
+            });
+            document.getElementById('dashTotal').innerText = total.toLocaleString();
+        }
+
+        async function deleteRow(row) {
+            if(!confirm("จะลบรายการนี้ออกจากคลังจริงๆ หรอ?")) return;
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", row }) });
+            cachedData = null;
+            loadManagePage();
+        }
+
+        // เริ่มต้นโหลดข้อมูลรายการโปรดทันทีที่เปิดแอป
+        fetchInitialData();
+    </script>
+</body>
+</html>
